@@ -1,29 +1,57 @@
 ﻿@page "/"
 @using System.Diagnostics;
+@inject ExtensionClient Client
+@inject IMessageService _message
+@inject ILogger<Index> _logger
 
 @code {
-    string spaceSize = "large";
-
-    void OnSingleFileUploadCompleted(UploadInfo info)
-    {
-        var f = info;
-        Debug.WriteLine(f.File.FileName);
-    }
+    string SizeLarge = "large";
 
     [Parameter]
-    public bool preRelease { get; set; }
+    public bool PreRelease { get; set; }
 
-    void OnPreReleaseChange(bool value)
+    async void OnPreReleaseChange(bool value)
     {
-        preRelease = value;
-        Debug.WriteLine(value);
-        StateHasChanged();
+        PreRelease = value;
+        await LoadPackages();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadPackages();
+    }
+
+    [CascadingParameter]
+    public IEnumerable<ExtensionPackage>? Packages { get; set; }
+
+    void OnFileChange(UploadInfo info)
+    {
+        if (info.File.State == UploadState.Uploading)
+        {
+            _logger.LogInformation($"{info.File.FileName} file is uploading");
+        }
+
+        if (info.File.State == UploadState.Success)
+        {
+            _logger.LogInformation($"{info.File.FileName} file uploaded successfully");
+            _message.Success($"{info.File.FileName} file uploaded successfully");
+        }
+        else if (info.File.State == UploadState.Fail)
+        {
+            _logger.LogError($"{info.File.FileName} file upload failed");
+            _message.Error($"{info.File.FileName} file upload failed");
+        }
+    }
+
+    async Task LoadPackages()
+    {
+        Packages = (await Client.GetExtensionsAsync(PreRelease)).DistinctBy(x => x.Identifier);
     }
 }
-<PageTitle>My Marketplace - Extensions</PageTitle>
+<PageTitle>My Marketplace - Available Extensions</PageTitle>
 
-<Space Align="center" Size="@spaceSize" Style="gap:24px">
-    <Upload Name="file" OnSingleCompleted="OnSingleFileUploadCompleted" Action="/extension">
+<Space Align="center" Size="@SizeLarge" Style="gap:24px">
+    <Upload Name="file" Action="/extension" OnChange="OnFileChange">
         <Button Icon="@IconType.Outline.Plus">Upload Extension</Button>
     </Upload>
     <Space Style="gap:8px">
@@ -32,5 +60,6 @@
     </Space>
 </Space>
 <Divider/>
-
-<PackageList PreRelease="@preRelease" />
+<CascadingValue Value="@Packages">
+    <PackageList />
+</CascadingValue>

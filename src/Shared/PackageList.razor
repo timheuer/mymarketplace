@@ -1,52 +1,47 @@
 ﻿@using System.Net;
 @inject ExtensionClient Client
+@inject IHttpContextAccessor http
+@inject IMessageService _message
 
 @code {
-    IEnumerable<ExtensionPackage>? _packages;
-
-    [Parameter]
-    public string? Identifier { get; set; }
-
-    [Parameter]
-    public bool PreRelease { get; set; }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        await LoadPackages();
-    }
-
-    async Task LoadPackages()
-    {
-        if (Identifier is not null)
-        {
-            _packages = (await Client.GetExtensionDetailsAsync(Identifier)).DistinctBy(x => x.Identifier);
-            // var http = new HttpClient();
-            // http.BaseAddress = new Uri("https://localhost:7004");
-            // ReadmeContent = await http.GetStringAsync(_packages.First().Extensions[0].ReadmePath);
-        }
-        else
-        {
-            _packages = (await Client.GetExtensionsAsync(PreRelease)).DistinctBy(x => x.Identifier);
-        }
-    }
+    [CascadingParameter]
+    public IEnumerable<ExtensionPackage>? Packages { get; set; }
 
     string SizeSmall = "small";
     static RenderFragment download =@<DownloadButton Type="@ButtonType.Primary" Icon="@IconType.Outline.Download" Url="/download/">Download</DownloadButton>;
     static RenderFragment delete =@<DownloadButton Type="@ButtonType.Primary" Icon="@IconType.Outline.Delete" Url="/delete" />;
     
     public RenderFragment[] actions = new[] { download };
+    void NotImplemented()
+    {
+        _message.Error("Not yet implemented");
+    }
+    public RenderFragment[] GetValidActions()
+    {
+        RenderFragment download =@<DownloadButton Type="@ButtonType.Primary" Icon="@IconType.Outline.Download" Url="/download/">Download</DownloadButton>;
+        RenderFragment delete =@<Button Type="@ButtonType.Primary" Icon="@IconType.Outline.Delete" OnClick="@NotImplemented"/>;
+        
+        if (http.HttpContext.User.IsInRole("Admins"))
+        {
+            return new RenderFragment[] { download, delete };
+        }
+        else
+        {
+            return new RenderFragment[] { download };
+        }
+    }
 }
 
-@if (_packages is null)
+@if (Packages is null)
 {
     <div class="d-flex justify-content-center align-items-center vh-100">
-        <div class="spinner-border" role="status"></div>
+        <Skeleton Avatar="true" ParagraphRows="4" Active="true"></Skeleton>
     </div>
 }
 else
 {
-    <AntList TItem="ExtensionPackage" DataSource="@_packages">
-        <ListItem Actions="@actions">
+    <AntList TItem="ExtensionPackage" DataSource="@Packages">
+        <ListItem Actions="@GetValidActions()">
             <ListItemMeta>
                 <DescriptionTemplate>
                     @context.Extensions[0].Description

@@ -1,6 +1,8 @@
-﻿<AuthorizeView>
+﻿@inject IHttpContextAccessor _httpContext
+
+<AuthorizeView>
     <Authorized>
-        Hello, @context.User.Identity?.Name!&nbsp;&nbsp;|&nbsp;&nbsp;<a href="MicrosoftIdentity/Account/SignOut">Log out</a>
+        <RoleIndicator />&nbsp;&nbsp;|&nbsp;&nbsp;Hello, @context.User.Identity?.Name!&nbsp;&nbsp;|&nbsp;&nbsp;<a href="MicrosoftIdentity/Account/SignOut">Log out</a>
     </Authorized>
     <NotAuthorized>
         <a href="MicrosoftIdentity/Account/SignIn">Log in</a>

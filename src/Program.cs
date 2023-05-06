@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
@@ -9,7 +10,7 @@ builder.Services.Configure<LiteDbOptions>(builder.Configuration.GetSection("Lite
 builder.Services.Configure<FormOptions>(p =>
 {
     p.ValueLengthLimit = int.MaxValue;
-    p.MultipartBoundaryLengthLimit = int.MaxValue;
+    p.MultipartBodyLengthLimit = int.MaxValue;
     p.MemoryBufferThreshold = int.MaxValue;
 });
 
@@ -17,8 +18,9 @@ builder.Services.AddSingleton<ILiteDbContext, LiteDbContext>();
 builder.Services.AddSingleton<IPackageReader, PackageReader>();
 builder.Services.AddSingleton<ExtensionClient>();
 builder.Services.AddTransient<IDatabaseService, DatabaseService>();
-
 builder.Services.AddAntDesign();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient();
 
 // Add services to the container.
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)

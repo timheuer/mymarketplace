@@ -1,4 +1,7 @@
 ﻿@page "/details/{identifier}/{version}"
+@inject ExtensionClient Client
+@inject HttpClient http
+@using System.Net
 
 @code {
     [Parameter]
@@ -6,27 +9,55 @@
 
     [Parameter]
     public string Version { get; set; }
+
+    [CascadingParameter]
+    public IEnumerable<ExtensionPackage>? Packages { get; set; }    
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadPackages();
+    }
+
+    private string ReadmeContent { get; set; } = string.Empty;
+    private List<string> versions;
+
+    async Task LoadPackages()
+    {
+        if (Identifier is not null)
+        {
+            var allPackages = (await Client.GetExtensionDetailsAsync(Identifier));
+            versions = allPackages.Select(x => x.Version).Distinct().ToList();
+            Packages = allPackages.Where(x => x.Identifier == Identifier && x.Version == Version);
+
+            http.BaseAddress = new Uri("https://localhost:7004");
+            ReadmeContent = await http.GetStringAsync(Packages.First().Extensions[0].ReadmePath);
+        }
+    }
 }
 <PageTitle>My Marketplace - Package Detail</PageTitle>
 
-<PackageList Identifier="@Identifier" />
+<CascadingValue Value="@Packages">
+    <PackageList />
 
-<Divider />
+    <Divider />
 
-<Space Direction="DirectionVHType.Horizontal" Style="gap:8px">
-    <Text>Version(s):</Text>
-    <DropdownButton>
-        <ChildContent>1.0.0</ChildContent>
-        <Overlay>
-            <Menu>
-                <MenuItem>1.0.0</MenuItem>
-                <MenuItem>1.0.1</MenuItem>
-                <MenuItem>1.0.2</MenuItem>
-            </Menu>
-        </Overlay>
-    </DropdownButton>
-</Space>
+    <Space Direction="DirectionVHType.Horizontal" Style="gap:8px">
+        <Text>Version(s):</Text>
+        <DropdownButton>
+            <ChildContent>@Version</ChildContent>
+            <Overlay>
+                <Menu>
+                    @foreach (var version in versions)
+                    {
+                        <MenuItem>@version</MenuItem>
+                    }
+                </Menu>
+            </Overlay>
+        </DropdownButton>
+    </Space>
 
-<Divider />
+    <Divider />
 
-<Readme />
+    <Readme ReadmeContent="@ReadmeContent" />
+
+</CascadingValue>

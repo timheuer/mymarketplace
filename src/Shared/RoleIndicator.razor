@@ -1,0 +1,12 @@
+﻿@inject IHttpContextAccessor _httpContext
+
+@code {
+    string role = "User";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = _httpContext.HttpContext.User;
+        role = user.IsInRole("Admins") ? "Admin" : "User";
+    }
+}
+<Tag Color="red">@role</Tag>

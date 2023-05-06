@@ -11,7 +11,6 @@ public class ExtensionManifest
     public string Identifier => $"{Metadata.Identity.Publisher}.{Metadata.Identity.Id}";
     public bool IsPreRelease { get; set; }
     public string Version => Metadata.Identity.Version;
-    public string SafeVersion => Version.Replace(".", "_");
     public string Target => Metadata?.Identity?.TargetPlatform ?? "any";
     public string Location { get; set; } = string.Empty;
     public string[] Categories => Metadata.CategoryString?.Split(',');
