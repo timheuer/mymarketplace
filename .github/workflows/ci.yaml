@@ -27,6 +27,9 @@ jobs:
     name: Deploy
     needs: build
     runs-on: ubuntu-latest
+    env:
+      AZURE_WEBAPP_NAME: csdkmp
+      AZURE_WEBAPP_PACKAGE_PATH: ./publish
 
     steps:
     - uses: actions/checkout@v3
