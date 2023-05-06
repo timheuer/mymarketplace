@@ -20,3 +20,5 @@ jobs:
   build:
     name: Build and Test
     uses: ./.github/workflows/build.yaml
+    with:
+        dotnetVersion: 7.0.x
