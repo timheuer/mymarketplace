@@ -1,27 +1,13 @@
 name: "Build and Test"
 
 on:
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - '**/*.md'
-      - '**/*.gitignore'
-      - '**/*.gitattributes'
-  pull_request:
-    branches:
-      - main
-    paths-ignore:
-      - '**/*.md'
-      - '**/*.gitignore'
-      - '**/*.gitattributes'
-  workflow_dispatch:
-    branches:
-      - main
-    paths-ignore:
-      - '**/*.md'
-      - '**/*.gitignore'
-      - '**/*.gitattributes'
+  workflow_call:
+    inputs:
+      dotnetVersion:
+        type: string
+        description: "The path to the project to build and test"
+        required: true
+        default: 7.0.x
       
 jobs:
   build:
@@ -37,6 +23,9 @@ jobs:
       DOTNET_SYSTEM_CONSOLE_ALLOW_ANSI_COLOR_REDIRECTION: true
       TERM: xterm
       PROJECT_PATH: src/mymarketplace.csproj
+      AZURE_WEBAPP_NAME: csdkmp
+      AZURE_WEBAPP_PACKAGE_PATH: ./publish
+      CONFIGURATION: Release
 
     steps:
     - uses: actions/checkout@v3
@@ -44,13 +33,29 @@ jobs:
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 7.0.x
+        dotnet-version: ${{ inputs.dotnetVersion }}
 
     - name: Restore
       run: dotnet restore ${{ env.PROJECT_PATH }}
 
+    - name: Create build number
+      run: |
+        now=$(date + '%Y%m%d')
+        buildNumber="$now.$GITHUB_RUN_NUMBER"
+        echo "BUILD_NUMBER=$buildNumber" >> $GITHUB_ENV"
+        echo "$buildNumber"
+
     - name: Build
-      run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore
+      run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore -p:BuildNumber=$BUILD_NUMBER -p:SourceRevisionId=$GITHUB_SHA -p:ContinuousIntegrationBuild=true
 
     - name: Test
       run: dotnet test ${{ env.PROJECT_PATH }} --no-restore --verbosity normal
+
+    - name: Publish
+      run: dotnet publish "${{ env.PROJECT_PATH }}" --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
+
+    - name: Publish Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: webapp
+        path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}

@@ -1,6 +1,7 @@
 ﻿@page "/details/{identifier}/{version}"
 @inject ExtensionClient Client
 @inject HttpClient http
+@inject NavigationManager Navigator
 @using System.Net
 
 @code {
@@ -29,7 +30,7 @@
             versions = allPackages.Select(x => x.Version).Distinct().ToList();
             Packages = allPackages.Where(x => x.Identifier == Identifier && x.Version == Version);
 
-            http.BaseAddress = new Uri("https://localhost:7004");
+            http.BaseAddress = new Uri(Navigator.BaseUri);
             ReadmeContent = await http.GetStringAsync(Packages.First().Extensions[0].ReadmePath);
         }
     }

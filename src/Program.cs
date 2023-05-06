@@ -18,6 +18,7 @@ builder.Services.AddSingleton<ILiteDbContext, LiteDbContext>();
 builder.Services.AddSingleton<IPackageReader, PackageReader>();
 builder.Services.AddSingleton<ExtensionClient>();
 builder.Services.AddTransient<IDatabaseService, DatabaseService>();
+builder.Services.AddSingleton<AppInfo>();
 builder.Services.AddAntDesign();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
