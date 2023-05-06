@@ -1,0 +1,32 @@
+﻿@page "/details/{identifier}/{version}"
+
+@code {
+    [Parameter]
+    public string Identifier { get; set; }
+
+    [Parameter]
+    public string Version { get; set; }
+}
+<PageTitle>My Marketplace - Package Detail</PageTitle>
+
+<PackageList Identifier="@Identifier" />
+
+<Divider />
+
+<Space Direction="DirectionVHType.Horizontal" Style="gap:8px">
+    <Text>Version(s):</Text>
+    <DropdownButton>
+        <ChildContent>1.0.0</ChildContent>
+        <Overlay>
+            <Menu>
+                <MenuItem>1.0.0</MenuItem>
+                <MenuItem>1.0.1</MenuItem>
+                <MenuItem>1.0.2</MenuItem>
+            </Menu>
+        </Overlay>
+    </DropdownButton>
+</Space>
+
+<Divider />
+
+<Readme />

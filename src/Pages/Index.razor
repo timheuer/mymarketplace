@@ -1,0 +1,36 @@
+﻿@page "/"
+@using System.Diagnostics;
+
+@code {
+    string spaceSize = "large";
+
+    void OnSingleFileUploadCompleted(UploadInfo info)
+    {
+        var f = info;
+        Debug.WriteLine(f.File.FileName);
+    }
+
+    [Parameter]
+    public bool preRelease { get; set; }
+
+    void OnPreReleaseChange(bool value)
+    {
+        preRelease = value;
+        Debug.WriteLine(value);
+        StateHasChanged();
+    }
+}
+<PageTitle>My Marketplace - Extensions</PageTitle>
+
+<Space Align="center" Size="@spaceSize" Style="gap:24px">
+    <Upload Name="file" OnSingleCompleted="OnSingleFileUploadCompleted" Action="/extension">
+        <Button Icon="@IconType.Outline.Plus">Upload Extension</Button>
+    </Upload>
+    <Space Style="gap:8px">
+        <Text>Show pre-release</Text>
+        <Switch OnChange="OnPreReleaseChange"/>
+    </Space>
+</Space>
+<Divider/>
+
+<PackageList PreRelease="@preRelease" />

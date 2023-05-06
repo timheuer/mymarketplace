@@ -1,0 +1,72 @@
+﻿@using System.Net;
+@inject ExtensionClient Client
+
+@code {
+    IEnumerable<ExtensionPackage>? _packages;
+
+    [Parameter]
+    public string? Identifier { get; set; }
+
+    [Parameter]
+    public bool PreRelease { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadPackages();
+    }
+
+    async Task LoadPackages()
+    {
+        if (Identifier is not null)
+        {
+            _packages = (await Client.GetExtensionDetailsAsync(Identifier)).DistinctBy(x => x.Identifier);
+            // var http = new HttpClient();
+            // http.BaseAddress = new Uri("https://localhost:7004");
+            // ReadmeContent = await http.GetStringAsync(_packages.First().Extensions[0].ReadmePath);
+        }
+        else
+        {
+            _packages = (await Client.GetExtensionsAsync(PreRelease)).DistinctBy(x => x.Identifier);
+        }
+    }
+
+    string SizeSmall = "small";
+    static RenderFragment download =@<DownloadButton Type="@ButtonType.Primary" Icon="@IconType.Outline.Download" Url="/download/">Download</DownloadButton>;
+    static RenderFragment delete =@<DownloadButton Type="@ButtonType.Primary" Icon="@IconType.Outline.Delete" Url="/delete" />;
+    
+    public RenderFragment[] actions = new[] { download };
+}
+
+@if (_packages is null)
+{
+    <div class="d-flex justify-content-center align-items-center vh-100">
+        <div class="spinner-border" role="status"></div>
+    </div>
+}
+else
+{
+    <AntList TItem="ExtensionPackage" DataSource="@_packages">
+        <ListItem Actions="@actions">
+            <ListItemMeta>
+                <DescriptionTemplate>
+                    @context.Extensions[0].Description
+                </DescriptionTemplate>
+                <AvatarTemplate>
+                    <Avatar Shape="@AvatarShape.Square" Size="64" Src="@context.Extensions[0].PackageIconPath" />
+                </AvatarTemplate>
+                <TitleTemplate>
+                    <Space Direction="DirectionVHType.Vertical" Size="@SizeSmall">
+                        <Space Align="center" Style="gap:8px">
+                            <NavLink href="@($"/details/{context.Extensions[0].Identifier}/{context.Extensions[0].Version}")">
+                                @context.Extensions[0].DisplayName
+                            </NavLink>
+                            <Tag>@($"v{context.Version}")
+                        </Tag>
+                            </Space>
+                        <Text Type="@TextElementType.Secondary">@context.Identifier</Text>
+                    </Space>
+                </TitleTemplate>
+            </ListItemMeta>
+        </ListItem>
+    </AntList>
+}

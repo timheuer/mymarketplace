@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.33702.567
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "mymarketplace", "mymarketplace.csproj", "{70FBE7BC-9626-457F-B68D-45D71466B309}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BDD64896-06D1-4662-94A1-CC0EC066A034}"
+	ProjectSection(SolutionItems) = preProject
+		..\README.md = ..\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{0A6E36E5-9FE1-4D13-BDBB-F0B2BFFCB86E}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build-9d81c.yaml = .github\workflows\build-9d81c.yaml
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{70FBE7BC-9626-457F-B68D-45D71466B309}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70FBE7BC-9626-457F-B68D-45D71466B309}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70FBE7BC-9626-457F-B68D-45D71466B309}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70FBE7BC-9626-457F-B68D-45D71466B309}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8DC42717-1F10-4779-B066-983BD8286F92}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,19 @@
+﻿@using Markdig;
+@code {
+
+    [Parameter]
+    public string ReadmeContent { get; set; }
+}
+
+@{
+    string md = string.Empty;
+    if (ReadmeContent is not null)
+    {
+        var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
+        md = Markdown.ToHtml(ReadmeContent, pipeline);
+    }
+}
+
+<div class="markdown-body">
+    @((MarkupString)md)
+</div>
