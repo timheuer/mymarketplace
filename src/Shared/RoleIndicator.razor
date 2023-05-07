@@ -9,6 +9,7 @@
         var user = _httpContext.HttpContext.User;
         role = user.IsInRole("Admins") ? "Admin" : "User";
         color = user.IsInRole("Admins") ? "red" : "blue";
+        StateHasChanged();
 
     }
 }
