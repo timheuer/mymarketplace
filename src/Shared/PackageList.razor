@@ -16,19 +16,13 @@
     {
         _message.Error("Not yet implemented");
     }
-
-    System.Security.Claims.ClaimsPrincipal user;
-
-    protected override async Task OnInitializedAsync()
-    {
-        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
-        user = authState.User;
-    }
-
     public RenderFragment[] GetValidActions()
     {
         RenderFragment download =@<DownloadButton Type="@ButtonType.Primary" Icon="@IconType.Outline.Download" Url="/download/">Download</DownloadButton>;
         RenderFragment delete =@<Button Type="@ButtonType.Primary" Icon="@IconType.Outline.Delete" OnClick="@NotImplemented"/>;
+        
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
 
         if (user.IsInRole("Admins"))
         {
