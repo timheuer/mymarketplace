@@ -38,8 +38,15 @@ jobs:
     - name: Restore
       run: dotnet restore ${{ env.PROJECT_PATH }}
 
+    - name: Create build number
+      run: |
+        now=$(date +'%Y%m%d')
+        buildNumber=$now.$GITHUB_RUN_NUMBER
+        echo "BUILD_NUMBER=$buildNumber" >> $GITHUB_ENV
+        echo "$buildNumber"
+
     - name: Build
-      run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore -p:SourceRevisionId=$GITHUB_SHA -p:ContinuousIntegrationBuild=true
+      run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore -p:BuildNumber=$BUILD_NUMBER -p:SourceRevisionId=$GITHUB_SHA -p:ContinuousIntegrationBuild=true
 
     - name: Test
       run: dotnet test ${{ env.PROJECT_PATH }} --no-restore --verbosity normal
