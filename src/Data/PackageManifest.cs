@@ -7,13 +7,13 @@ public class ExtensionManifest
     public Metadata? Metadata { get; set; }
     [XmlArray("Assets")]
     [XmlArrayItem("Asset")]
-    public List<Asset> Assets { get; set; }
-    public string Identifier => $"{Metadata.Identity.Publisher}.{Metadata.Identity.Id}";
+    public List<Asset>? Assets { get; set; }
+    public string Identifier => $"{Metadata?.Identity?.Publisher}.{Metadata?.Identity?.Id}";
     public bool IsPreRelease { get; set; }
-    public string Version => Metadata.Identity.Version;
+    public string Version => Metadata?.Identity?.Version ?? "0.0.0";
     public string Target => Metadata?.Identity?.TargetPlatform ?? "any";
     public string Location { get; set; } = string.Empty;
-    public string[] Categories => Metadata.CategoryString?.Split(',');
+    public string[]? Categories => Metadata?.CategoryString?.Split(',');
     public string DisplayName => Metadata?.DisplayName ?? Identifier;
     public string? Description => Metadata?.Description ?? string.Empty;
     public string? RelativeIconPath => Assets?.FirstOrDefault(a => a.AssetType == "Microsoft.VisualStudio.Services.Icons.Default")?.Path;
@@ -21,7 +21,7 @@ public class ExtensionManifest
     public string? PackageIconPath => (RelativeIconPath is null) ? "/box.png" : Path.Combine("output", Location, RelativeIconPath);
     public string? RelativeReadmePath => Assets?.FirstOrDefault(a => a.AssetType == "Microsoft.VisualStudio.Services.Content.Details")?.Path;
 
-    public string? ReadmePath => Path.Combine("output", Location, RelativeReadmePath);
+    public string? ReadmePath => RelativeReadmePath is null ? null : Path.Combine("output", Location, RelativeReadmePath);
 }
 
 public class Metadata
@@ -34,7 +34,7 @@ public class Metadata
     public string? CategoryString { get; set; }
     [XmlElement("Description")]
     public string? Description { get; set; } = string.Empty;
-    public string[] Categories => CategoryString?.Split(',');
+    public string[]? Categories => CategoryString?.Split(',');
 }
 
 public class Identity

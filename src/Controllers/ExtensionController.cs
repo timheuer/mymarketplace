@@ -36,8 +36,8 @@ public class ExtensionController : ControllerBase
     {
         var targets = _databaseService
            .Find(p => p.Identifier == id && p.Version == version)
-           .Where(p => p.Metadata.Identity.TargetPlatform != null)
-           .Select(p => p.Metadata.Identity.TargetPlatform)
+           .Where(p => p.Metadata?.Identity?.TargetPlatform != null)
+           .Select(p => p.Metadata?.Identity?.TargetPlatform)
            .ToList();
 
         return Ok(targets);
@@ -58,7 +58,7 @@ public class ExtensionController : ControllerBase
         //read api key from request header
         if (RequireUploadAPIKey)
         {
-            string apiKey = Request.Headers["x-api-key"];
+            string? apiKey = Request.Headers["x-api-key"];
             if (string.IsNullOrWhiteSpace(apiKey) || apiKey != UploadAPIKey)
                 return Unauthorized("Missing or invalid API key");
         }
@@ -85,9 +85,9 @@ public class ExtensionController : ControllerBase
         {
             _logger.LogError(exception, exception.Message);
 
-            string identifier = package.Target == DefaulTarget
+            string identifier = package?.Target == DefaulTarget
             ? $"{package.DisplayName} v{package.Version}"
-            : $"{package.DisplayName} v{package.Version} for {package.Target}";
+            : $"{package?.DisplayName} v{package?.Version} for {package?.Target}";
 
             return Conflict($"{identifier} already exists");
         }

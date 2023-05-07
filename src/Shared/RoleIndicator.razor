@@ -6,11 +6,13 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var user = _httpContext.HttpContext.User;
-        role = user.IsInRole("Admins") ? "Admin" : "User";
-        color = user.IsInRole("Admins") ? "red" : "blue";
-        StateHasChanged();
-
+        if (_httpContext.HttpContext is not null)
+        {
+            var user = _httpContext.HttpContext.User;
+            role = user.IsInRole("Admins") ? "Admin" : "User";
+            color = user.IsInRole("Admins") ? "red" : "blue";
+            StateHasChanged();
+        }
     }
 }
 <Tag Color="@color">@role</Tag>

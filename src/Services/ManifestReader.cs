@@ -4,12 +4,12 @@ using System.Xml.Serialization;
 public interface IPackageReader
 {
     string ExtractFile(string fileOnServer, string extractFileName);
-    ExtensionManifest ExtractPackage(string fileOnServer);
+    ExtensionManifest? ExtractPackage(string fileOnServer);
 }
 
 public class PackageReader : IPackageReader
 {
-    public ExtensionManifest ExtractPackage(string fileOnServer)
+    public ExtensionManifest? ExtractPackage(string fileOnServer)
     {
         string outputFilePath = ExtractFile(fileOnServer, "extension.vsixmanifest");
         ExtensionManifest? manifest = default(ExtensionManifest);
@@ -18,16 +18,19 @@ public class PackageReader : IPackageReader
         using (StringReader stream = new StringReader(File.ReadAllText(outputFilePath)))
         {
             manifest = serializer.Deserialize(stream) as ExtensionManifest;
-            var assets = manifest?.Assets;
-
-            foreach (var asset in assets)
+            if (manifest is not null)
             {
-                if (asset.Path != null)
-                    ExtractFile(fileOnServer, asset.Path);
+                var assets = manifest.Assets;
+
+                foreach (var asset in assets ?? Enumerable.Empty<Asset>())
+                {
+                    if (asset.Path != null)
+                        ExtractFile(fileOnServer, asset.Path);
+                }
+                //set file name
+                manifest.Location = Path.GetFileNameWithoutExtension(fileOnServer);
             }
         }
-        //set file name
-        manifest.Location = Path.GetFileNameWithoutExtension(fileOnServer);
         return manifest;
     }
     public string ExtractFile(string fileOnServer, string extractFileName)

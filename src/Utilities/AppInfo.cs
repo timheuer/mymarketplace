@@ -8,7 +8,7 @@ public class AppInfo
 {
     public AppInfo() { }
 
-    private string _gitHash;
+    private string? _gitHash;
     public string GitHash
     {
         get
