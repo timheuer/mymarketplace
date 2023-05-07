@@ -1,4 +1,6 @@
 ﻿@inject IHttpContextAccessor _httpContext
+@inject AuthenticationStateProvider _authenticationStateProvider
+@inject ILogger<RoleIndicator> _logger
 
 @code {
     string role = "User";
@@ -6,17 +8,16 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (_httpContext.HttpContext is not null)
-        {
-            var user = _httpContext.HttpContext.User;
-            role = user.IsInRole("Admins") ? "Admin" : "User";
-            color = user.IsInRole("Admins") ? "red" : "blue";
-            StateHasChanged();
-        }
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        _logger.LogInformation($"User: {user.Identity.Name}");
+        _logger.LogInformation($"User: {user.Identity.AuthenticationType}");
+        _logger.LogInformation($"User is admin: {user.IsInRole("Admins")}");
+        _logger.LogInformation($"User is users: {user.IsInRole("Users")}");
+
+        role = user.IsInRole("Admins") ? "Admin" : "User";
+        color = user.IsInRole("Admins") ? "red" : "blue";
+        StateHasChanged();
     }
 }
 <Tag Color="@color">@role</Tag>
-<div>
-    Admin: @(_httpContext.HttpContext.User.IsInRole("Admins") ? "Yes" : "No")<br/>
-    User: @(_httpContext.HttpContext.User.IsInRole("Users") ? "Yes" : "No")
-</div>

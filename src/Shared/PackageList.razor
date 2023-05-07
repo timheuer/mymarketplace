@@ -1,6 +1,6 @@
 ﻿@using System.Net;
 @inject ExtensionClient Client
-@inject IHttpContextAccessor http
+@inject AuthenticationStateProvider _authenticationStateProvider
 @inject IMessageService _message
 
 @code {
@@ -21,7 +21,10 @@
         RenderFragment download =@<DownloadButton Type="@ButtonType.Primary" Icon="@IconType.Outline.Download" Url="/download/">Download</DownloadButton>;
         RenderFragment delete =@<Button Type="@ButtonType.Primary" Icon="@IconType.Outline.Delete" OnClick="@NotImplemented"/>;
         
-        if (http.HttpContext is not null && http.HttpContext.User.IsInRole("Admins"))
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.IsInRole("Admins"))
         {
             return new RenderFragment[] { download, delete };
         }
