@@ -21,7 +21,3 @@
     }
 }
 <Tag Color="@color">@role</Tag>
-<div>
-    Admin: @(_httpContext.HttpContext.User.IsInRole("Admins") ? "Yes" : "No")<br />
-    User: @(_httpContext.HttpContext.User.IsInRole("Users") ? "Yes" : "No")
-</div>
