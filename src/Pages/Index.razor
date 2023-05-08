@@ -43,6 +43,12 @@
         }
     }
 
+    async Task UploadsCompleted()
+    {
+        await LoadPackages();
+        await InvokeAsync(() => StateHasChanged());
+    }
+
     async Task LoadPackages()
     {
         Packages = (await Client.GetExtensionsAsync(PreRelease)).DistinctBy(x => x.Identifier);
@@ -51,7 +57,7 @@
 <PageTitle>My Marketplace - Available Extensions</PageTitle>
 
 <Space Align="center" Size="@SizeLarge" Style="gap:24px">
-    <Upload Name="file" Action="/extension" OnChange="OnFileChange" Multiple>
+    <Upload Name="file" Action="/extension" OnChange="OnFileChange" Multiple OnCompleted="UploadsCompleted">
         <Button Icon="@IconType.Outline.Plus">Upload Extension</Button>
     </Upload>
     <Space Style="gap:8px">
