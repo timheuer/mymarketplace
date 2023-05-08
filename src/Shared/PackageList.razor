@@ -24,9 +24,10 @@
             _message.Error($"Failed to delete {identifer} package");
         }
     }
-    public RenderFragment[] GetValidActions(string identifier)
+    public RenderFragment[] GetValidActions(string identifier, string version)
     {
-        RenderFragment download =@<DownloadButton Type="@ButtonType.Primary" Icon="@IconType.Outline.Download" Url="/download/">Download</DownloadButton>;
+        string downloadUri = $"/download/{identifier}/{version}";
+        RenderFragment download =@<DownloadButton Type="@ButtonType.Primary" Icon="@IconType.Outline.Download" Url="@downloadUri">Download</DownloadButton>;
         RenderFragment delete =@<Popconfirm Style="display:contents" Title="Are you sure you want to delete?" OnConfirm="@(()=>DeletePackage(identifier))"><Button Type="@ButtonType.Primary" Icon="@IconType.Outline.Delete"/></Popconfirm>;
 
         if (http.HttpContext is not null && http.HttpContext.User.IsInRole("Admins"))
@@ -49,7 +50,7 @@
 else
 {
     <AntList TItem="ExtensionPackage" DataSource="@Packages">
-        <ListItem Actions="@GetValidActions(context.Identifier)">
+        <ListItem Actions="@GetValidActions(context.Identifier, context.Extensions[0].Version)">
             <ListItemMeta>
                 <DescriptionTemplate>
                     @context.Extensions[0].Description
