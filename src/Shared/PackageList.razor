@@ -27,7 +27,7 @@
     public RenderFragment[] GetValidActions(string identifier)
     {
         RenderFragment download =@<DownloadButton Type="@ButtonType.Primary" Icon="@IconType.Outline.Download" Url="/download/">Download</DownloadButton>;
-        RenderFragment delete =@<Popconfirm Title="Are you sure you want to delete?" OnConfirm="@(()=>DeletePackage(identifier))"><Button Type="@ButtonType.Primary" Icon="@IconType.Outline.Delete"/></Popconfirm>;
+        RenderFragment delete =@<Popconfirm Style="display:contents" Title="Are you sure you want to delete?" OnConfirm="@(()=>DeletePackage(identifier))"><Button Type="@ButtonType.Primary" Icon="@IconType.Outline.Delete"/></Popconfirm>;
 
         if (http.HttpContext is not null && http.HttpContext.User.IsInRole("Admins"))
         {
