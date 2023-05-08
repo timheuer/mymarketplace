@@ -7,4 +7,6 @@ public interface IDatabaseService
 
     List<ExtensionManifest> Find(Expression<Func<ExtensionManifest, bool>> predicate);
     List<ExtensionManifest> Query();
+
+    bool Delete(string identifier);
 }

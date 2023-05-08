@@ -31,6 +31,13 @@ public class DatabaseService : IDatabaseService
         return Packages.Find(predicate).ToList();
     }
 
+    public bool Delete(string identifier)
+    {
+        var numDeleted = Packages.DeleteMany(p => p.Identifier == identifier);
+        return numDeleted > 0;
+        // TODO: delete package files from server
+    }
+
     public List<ExtensionManifest> Query()
     {
         return Packages.Query().ToList();

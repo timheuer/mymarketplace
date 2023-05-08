@@ -1,4 +1,5 @@
 ﻿using Semver;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 public class ExtensionClient
@@ -54,6 +55,23 @@ public class ExtensionClient
             )).OrderByDescending(r => GetVersion(r.Version));
 
         return extensionPackages;
+    }
+
+    public async Task<bool> DeletePackage(string identifier)
+    {
+        var package = await GetExtensionDetailsAsync(identifier);
+        bool deletedFromDb = _databaseService.Delete(identifier);
+
+        foreach (var pkg in package)
+        {
+            foreach (var extension in pkg.Extensions)
+            {
+                string fileOnServer = Path.Combine(Utilities.OutputDirectory(_environment), extension.Location);
+                Directory.Delete(fileOnServer, true);
+            }
+        }
+
+        return deletedFromDb;
     }
 
     SemVersion GetVersion(string version)

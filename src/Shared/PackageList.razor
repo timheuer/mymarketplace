@@ -12,14 +12,22 @@
     static RenderFragment delete =@<DownloadButton Type="@ButtonType.Primary" Icon="@IconType.Outline.Delete" Url="/delete" />;
     
     public RenderFragment[] actions = new[] { download };
-    void NotImplemented()
+
+    private async Task DeletePackage(string identifer)
     {
-        _message.Error("Not yet implemented");
+        if (await Client.DeletePackage(identifer))
+        {
+            _message.Success($"{identifer} Package deleted");
+        }
+        else
+        {
+            _message.Error($"Failed to delete {identifer} package");
+        }
     }
-    public RenderFragment[] GetValidActions()
+    public RenderFragment[] GetValidActions(string identifier)
     {
         RenderFragment download =@<DownloadButton Type="@ButtonType.Primary" Icon="@IconType.Outline.Download" Url="/download/">Download</DownloadButton>;
-        RenderFragment delete =@<Button Type="@ButtonType.Primary" Icon="@IconType.Outline.Delete" OnClick="@NotImplemented"/>;
+        RenderFragment delete =@<Popconfirm Title="Are you sure you want to delete?" OnConfirm="@(()=>DeletePackage(identifier))"><Button Type="@ButtonType.Primary" Icon="@IconType.Outline.Delete"/></Popconfirm>;
 
         if (http.HttpContext is not null && http.HttpContext.User.IsInRole("Admins"))
         {
@@ -41,7 +49,7 @@
 else
 {
     <AntList TItem="ExtensionPackage" DataSource="@Packages">
-        <ListItem Actions="@GetValidActions()">
+        <ListItem Actions="@GetValidActions(context.Identifier)">
             <ListItemMeta>
                 <DescriptionTemplate>
                     @context.Extensions[0].Description

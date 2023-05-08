@@ -43,15 +43,6 @@ public class ExtensionController : ControllerBase
         return Ok(targets);
     }
 
-    [HttpGet]
-    [Route("/delete/{id}")]
-    [Authorize(Roles = "Admins")]
-    public IActionResult DeleteExtension(string id)
-    {
-        var packages = _databaseService.Find(p=>p.Identifier == id);
-        return Ok();
-    }
-
     [HttpPost, DisableRequestSizeLimit]
     public async Task<IActionResult> AddExtensionsAsync(IFormFile file)
     {
