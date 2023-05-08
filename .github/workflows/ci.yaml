@@ -28,7 +28,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     env:
-      AZURE_WEBAPP_NAME: csdkmp
+      AZURE_WEBAPP_NAME: ddmp
       AZURE_WEBAPP_PACKAGE_PATH: ./publish
 
     steps:
