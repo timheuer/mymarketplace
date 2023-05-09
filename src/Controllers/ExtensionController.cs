@@ -68,23 +68,30 @@ public class ExtensionController : ControllerBase
 
         var package = _manifestReader.ExtractPackage(fileOnServer);
 
-        try
+        if (package is not null)
         {
-            var result = _databaseService.InsertPackage(package);
+            try
+            {
+                var result = _databaseService.InsertPackage(package);
+            }
+            catch (LiteDB.LiteException exception)
+            {
+                _logger.LogError(exception, exception.Message);
+
+                string identifier = package?.Target == DefaulTarget
+                ? $"{package.DisplayName} v{package.Version}"
+                : $"{package?.DisplayName} v{package?.Version} for {package?.Target}";
+
+                return Conflict($"{identifier} already exists");
+            }
+
+            MoveUploadedFile(fileOnServer);
+            return Created($"/{package.Identifier}", package);
         }
-        catch (LiteDB.LiteException exception)
+        else
         {
-            _logger.LogError(exception, exception.Message);
-
-            string identifier = package?.Target == DefaulTarget
-            ? $"{package.DisplayName} v{package.Version}"
-            : $"{package?.DisplayName} v{package?.Version} for {package?.Target}";
-
-            return Conflict($"{identifier} already exists");
+            return BadRequest();
         }
-
-        MoveUploadedFile(fileOnServer);
-        return Created($"/{package.Identifier}", package);
 
         static bool IsExtensionAllowed(string fileName)
         {

@@ -14,12 +14,12 @@
     {
         if (await Client.DeletePackage(identifer))
         {
-            _message.Success($"{identifer} Package deleted");
+            await _message.Success($"{identifer} Package deleted");
             Navigator.NavigateTo("/", true);
         }
         else
         {
-            _message.Error($"Failed to delete {identifer} package");
+            await _message.Error($"Failed to delete {identifer} package");
         }
     }
 

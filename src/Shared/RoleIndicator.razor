@@ -10,13 +10,18 @@
         if (_httpContext is not null && _httpContext.HttpContext is not null)
         {
             var user = _httpContext.HttpContext.User;
-            _logger.LogInformation($"User: {user.Identity.Name}");
-            _logger.LogInformation($"User: {user.Identity.AuthenticationType}");
-            _logger.LogInformation($"User is admin: {user.IsInRole("Admins")}");
-            _logger.LogInformation($"User is users: {user.IsInRole("Users")}");
-            role = user.IsInRole("Admins") ? "Admin" : "User";
-            color = user.IsInRole("Admins") ? "red" : "blue";
-            StateHasChanged();
+            
+            if (user is not null)
+            {
+                _logger.LogInformation($"User: {user.Identity.Name}");
+                _logger.LogInformation($"User: {user.Identity.AuthenticationType}");
+                _logger.LogInformation($"User is admin: {user.IsInRole("Admins")}");
+                _logger.LogInformation($"User is users: {user.IsInRole("Users")}");
+
+                role = user.IsInRole("Admins") ? "Admin" : "User";
+                color = user.IsInRole("Admins") ? "red" : "blue";
+                StateHasChanged();
+            }
         }
     }
 }
