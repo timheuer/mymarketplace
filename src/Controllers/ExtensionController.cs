@@ -95,10 +95,10 @@ public class ExtensionController : ControllerBase
     }
 
     [HttpGet]
-    [Route("/download/{identifier}/{version?}")]
-    public IActionResult DownloadPackage(string identifier, string version)
+    [Route("/download/{identifier}/{version?}/{target?}")]
+    public IActionResult DownloadPackage(string identifier, string version, string target)
     {
-        var package = _databaseService.Find(p => p.Identifier == identifier && p.Version == version).FirstOrDefault();
+        var package = _databaseService.Find(p => p.Identifier == identifier && p.Version == version && p.Target == target).FirstOrDefault();
         if (package == null)
             return NotFound();
 
