@@ -15,6 +15,7 @@
         if (await Client.DeletePackage(identifer))
         {
             _message.Success($"{identifer} Package deleted");
+            Navigator.NavigateTo("/", true);
         }
         else
         {
