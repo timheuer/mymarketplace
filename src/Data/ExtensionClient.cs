@@ -68,11 +68,13 @@ public class ExtensionClient
             {
                 // delete the folder from the server
                 string directoryOnServer = Path.Combine(Utilities.OutputDirectory(_environment), extension.Location);
-                Directory.Delete(directoryOnServer, true);
+                if (Directory.Exists(directoryOnServer))
+                    Directory.Delete(directoryOnServer, true);
 
                 // delete the vsix from the server
                 string fileOnServer = $"{Path.Combine(Utilities.OutputDirectory(_environment), extension.Location)}.vsix";
-                File.Delete(fileOnServer);
+                if (File.Exists(fileOnServer))
+                    File.Delete(fileOnServer);
             }
         }
 

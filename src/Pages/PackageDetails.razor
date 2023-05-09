@@ -34,6 +34,12 @@
             ReadmeContent = await http.GetStringAsync(Packages.First().Extensions[0].ReadmePath);
         }
     }
+
+    void VersionSelected(string version)
+    {
+        Version = version;
+        Navigator.NavigateTo($"/details/{Identifier}/{version}", true);
+    }
 }
 <PageTitle>My Marketplace - Package Detail</PageTitle>
 
@@ -47,10 +53,10 @@
         <DropdownButton>
             <ChildContent>@Version</ChildContent>
             <Overlay>
-                <Menu>
+                <Menu Selectable DefaultSelectedKeys="@(new[] {@Version})" OnMenuItemClicked="@((mi)=>VersionSelected(mi.Key))">
                     @foreach (var version in versions)
                     {
-                        <MenuItem>@version</MenuItem>
+                        <MenuItem Key="@version">@version</MenuItem>
                     }
                 </Menu>
             </Overlay>
