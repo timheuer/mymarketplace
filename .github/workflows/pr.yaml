@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - main
+      - auth
     paths-ignore:
       - '**/*.md'
       - '**/*.gitignore'
@@ -11,6 +12,7 @@ on:
   workflow_dispatch:
     branches:
       - main
+      - auth
     paths-ignore:
       - '**/*.md'
       - '**/*.gitignore'

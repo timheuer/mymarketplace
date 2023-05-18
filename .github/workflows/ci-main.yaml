@@ -1,16 +1,16 @@
-name: "Build and Deploy"
+name: "Build and Deploy-main"
 
 on:
   push:
     branches:
-      - auth
+      - main
     paths-ignore:
       - '**/*.md'
       - '**/*.gitignore'
       - '**/*.gitattributes'
   workflow_dispatch:
     branches:
-      - auth
+      - main
     paths-ignore:
       - '**/*.md'
       - '**/*.gitignore'
@@ -28,7 +28,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     env:
-      AZURE_WEBAPP_NAME: ddmp
+      AZURE_WEBAPP_NAME: mymarketplace
       AZURE_WEBAPP_PACKAGE_PATH: ./publish
 
     steps:
@@ -45,7 +45,7 @@ jobs:
     - name: Azure login
       uses: azure/login@v1
       with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        creds: ${{ secrets.AZURE_CREDENTIALS_MAIN }}
 
     - name: Deploy to Azure WebApp
       uses: azure/webapps-deploy@v2
