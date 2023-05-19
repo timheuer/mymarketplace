@@ -22,7 +22,7 @@ public class DatabaseService : IDatabaseService
     bool ValidateVersion(ExtensionManifest package)
     {
         bool success = SemVersion.TryParse(package.Version, SemVersionStyles.Strict, out var version);
-        package.IsPreRelease = version.IsPrerelease;
+        //package.IsPreRelease = version.IsPrerelease;
         return success;
     }
 

@@ -1,4 +1,5 @@
-﻿using System.Xml.Serialization;
+﻿using AntDesign;
+using System.Xml.Serialization;
 
 [XmlRoot("PackageManifest", Namespace = "http://schemas.microsoft.com/developer/vsx-schema/2011")]
 public class ExtensionManifest
@@ -9,7 +10,7 @@ public class ExtensionManifest
     [XmlArrayItem("Asset")]
     public List<Asset>? Assets { get; set; }
     public string Identifier => $"{Metadata?.Identity?.Publisher}.{Metadata?.Identity?.Id}";
-    public bool IsPreRelease { get; set; }
+    public bool IsPreRelease => Convert.ToBoolean(Metadata?.Properties?.FirstOrDefault(p => p.Id == "Microsoft.VisualStudio.Code.PreRelease")?.Value);
     public string Version => Metadata?.Identity?.Version ?? "0.0.0";
     public string Target => Metadata?.Identity?.TargetPlatform ?? "any";
     public string Location { get; set; } = string.Empty;
@@ -22,6 +23,16 @@ public class ExtensionManifest
     public string? RelativeReadmePath => Assets?.FirstOrDefault(a => a.AssetType == "Microsoft.VisualStudio.Services.Content.Details")?.Path;
 
     public string? ReadmePath => RelativeReadmePath is null ? null : Path.Combine("output", Location, RelativeReadmePath);
+
+    public string GalleryFlags => Metadata?.GalleryFlags ?? "Public";
+
+    public bool IsPreview
+    {
+        get
+        {
+            return (GalleryFlags.ToLowerInvariant().Contains("preview"));
+        }
+    }
 }
 
 public class Metadata
@@ -35,6 +46,20 @@ public class Metadata
     [XmlElement("Description")]
     public string? Description { get; set; } = string.Empty;
     public string[]? Categories => CategoryString?.Split(',');
+    [XmlElement("GalleryFlags")]
+    public string? GalleryFlags { get; set; }
+    [XmlArray("Properties")]
+    [XmlArrayItem("Property")]
+    public List<Property>? Properties { get; set; }
+}
+
+public class Property
+{
+    [XmlAttribute("Id")]
+    public string? Id { get; set; }
+
+    [XmlAttribute("Value")]
+    public string? Value { get; set; }
 }
 
 public class Identity
