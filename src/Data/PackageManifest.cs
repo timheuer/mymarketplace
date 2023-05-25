@@ -1,6 +1,6 @@
 ﻿using AntDesign;
 using System.Xml.Serialization;
-
+using Semver;
 [XmlRoot("PackageManifest", Namespace = "http://schemas.microsoft.com/developer/vsx-schema/2011")]
 public class ExtensionManifest
 {
@@ -10,7 +10,16 @@ public class ExtensionManifest
     [XmlArrayItem("Asset")]
     public List<Asset>? Assets { get; set; }
     public string Identifier => $"{Metadata?.Identity?.Publisher}.{Metadata?.Identity?.Id}";
-    public bool IsPreRelease => Convert.ToBoolean(Metadata?.Properties?.FirstOrDefault(p => p.Id == "Microsoft.VisualStudio.Code.PreRelease")?.Value);
+    public bool IsPreRelease
+    {
+        get
+        {
+            bool isPreRelease = Convert.ToBoolean(Metadata?.Properties?.FirstOrDefault(p => p.Id == "Microsoft.VisualStudio.Code.PreRelease")?.Value);
+            var success = SemVersion.TryParse(Version, SemVersionStyles.Strict, out var semVersion);
+
+            return isPreRelease || (success && semVersion.IsPrerelease);
+        }
+    }
     public string Version => Metadata?.Identity?.Version ?? "0.0.0";
     public string Target => Metadata?.Identity?.TargetPlatform ?? "any";
     public string Location { get; set; } = string.Empty;
