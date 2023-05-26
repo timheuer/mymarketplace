@@ -18,4 +18,4 @@ This was inspired by [Prashant](https://github.com/prashantvc)'s https://github.
 
 Default icons used in this app are from:
 - <a href="https://www.flaticon.com/free-icons/box" title="box icons">Box icons created by Good Ware - Flaticon</a>
-- <a href="https://www.flaticon.com/free-icons/marketplace" title="marketplace icons">Marketplace icons created by DinosoftLabs - Flaticon</a>
+- Marketplace icon is 'market place' by Becris from <a href="https://thenounproject.com/browse/icons/term/market-place/" target="_blank" title="market place Icons">Noun Project</a>
