@@ -3,12 +3,15 @@ This is a sample application to serve as a place to host private VS Code extensi
 
 It is not official.  It also does not automatically enable you to connect to it from within VS Code itself.
 
-To install an extension from this marketplace, you will need to download the .vsix file and install it manually.
+To install an extension from this marketplace, it will copy it locally from the source first then install.
 
 ![Screenshot of the home page of this app](docs/screenshot.png)
 
 
-## How to use
+## VS Code Extension
+A complimentary extension to read this private marketplace (or directory sources) is available at [timheuer/mympclient](https://github.com/timheuer/mympclient).
+
+## How to use (for auth--not fully implemented)
 You'll need to have an Azure AD app registration and configure it in either your appsettings.json file or in environment/config for the deployed app.
 
 You need to assign a group Users to the app registration and add users to that group.
