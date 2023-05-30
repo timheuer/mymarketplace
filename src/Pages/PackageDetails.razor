@@ -62,6 +62,7 @@
         UnavailableExtensions = extensionPackIds.Except(items.Select(x => x.Identifier)).ToArray();
 
         ExtensionPackContents = items.Select(x => x.MainExtension).ToList();
+        string.Format("Extension pack contains {0} extensions", ExtensionPackContents.Count);
     }
 }
 <PageTitle>@SelectedExtensionVersion.DisplayName - My Marketplace</PageTitle>
@@ -93,8 +94,8 @@
         </TabPane>
         @if (SelectedExtensionVersion!.IsExtensionPack)
         {
-                <TabPane Key="extensionPack" Tab="Extension Pack">
-                @if (@UnavailableExtensions.Count() > 0)
+                <TabPane Key="extensionPack" Tab='@string.Format("Extension Pack ({0})", SelectedExtensionVersion!.ExtensionPackIds.Length)'>
+                @if (@UnavailableExtensions.Length > 0)
                 {
                     <Text>This pack contains the following extensions that are missing:</Text>
                     <ul>
@@ -116,7 +117,7 @@
                                 <TitleTemplate>
                                     <Space Direction="DirectionVHType.Vertical">
                                             <Space Align="center" Style="gap:8px">
-                                                <NavLink href="@($"/details/{context.Identifier}/{context.Version}")">
+                                                <NavLink target="_top" href="@($"/details/{context.Identifier}/{context.Version}")">
                                                     @context.DisplayName
                                                 </NavLink>
                                                 <Tag>@($"v{context.Version}")</Tag>
