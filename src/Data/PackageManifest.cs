@@ -20,6 +20,20 @@ public class ExtensionManifest
             return isPreRelease || (success && semVersion.IsPrerelease);
         }
     }
+    public bool IsExtensionPack => ExtensionPackContents is not null && ExtensionPackContents.Length > 0;
+    public string[] ExtensionPackContents
+    {
+        get
+        {
+            string? value = Metadata?.Properties?.FirstOrDefault(p => p.Id == "Microsoft.VisualStudio.Code.ExtensionPack")?.Value;
+            if (string.IsNullOrWhiteSpace(value))
+                return Array.Empty<string>();
+
+            return value.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+        }
+    }
+
     public string Version => Metadata?.Identity?.Version ?? "0.0.0";
     public string Target => Metadata?.Identity?.TargetPlatform ?? "any";
     public string Location { get; set; } = string.Empty;

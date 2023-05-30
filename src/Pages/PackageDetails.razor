@@ -20,7 +20,10 @@
     }
 
     private string ReadmeContent { get; set; } = string.Empty;
-    private List<string>? versions;
+    private List<string> versions = new();
+
+    private ExtensionManifest? SelectedExtensionVersion => 
+        Packages?.FirstOrDefault()?.Extensions.FirstOrDefault();
 
     async Task LoadPackages()
     {
@@ -31,7 +34,7 @@
             Packages = allPackages.Where(x => x.Identifier == Identifier && x.Version == Version);
 
             http.BaseAddress = new Uri(Navigator.BaseUri);
-            ReadmeContent = await http.GetStringAsync(Packages.First().Extensions[0].ReadmePath);
+            ReadmeContent = await http.GetStringAsync(SelectedExtensionVersion!.ReadmePath);
         }
     }
 
@@ -67,7 +70,17 @@
     </Space>
 
     <Divider />
-
-    <Readme ReadmeContent="@ReadmeContent" />
+    <Tabs>
+        <TabPane Key="readme" Tab="Overview">
+            <Readme ReadmeContent="@ReadmeContent" />
+        </TabPane>
+        @if (SelectedExtensionVersion!.IsExtensionPack)
+        {
+            <TabPane Key="details" Tab="Details">
+                <h1>Hello world!</h1>
+            </TabPane>
+        }
+         
+    </Tabs>
 
 </CascadingValue>
