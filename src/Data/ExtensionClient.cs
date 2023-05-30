@@ -28,16 +28,30 @@ public class ExtensionClient
         var packagesList = prerelease ? _databaseService.Query()
         : _databaseService.Find(p => !p.IsPreRelease);
 
-        var extensionPackages = packagesList.GroupBy(p => new { p.Identifier, p.Version })
-        .Select(x =>
-            new ExtensionPackage(x.Key.Identifier, x.Key.Version,
-                x.Where(r => r.Identifier == x.Key.Identifier).ToList()
-            )).OrderByDescending(r => GetVersion(r.Version));
+        var extensionPackages = PackageExtensions(packagesList);
 
         return extensionPackages;
     }
 
-    public async Task<IEnumerable<ExtensionPackage>> GetExtensionsAsync(bool prerelease=false)
+    public async Task<IEnumerable<ExtensionPackage>> GetExtensionPackagesAsync(string[] identifiers)
+    {
+        var packagesList = _databaseService.Find(p => identifiers.Contains(p.Identifier));
+        var extensionPackages = PackageExtensions(packagesList);
+        return extensionPackages;
+    }
+
+    IOrderedEnumerable<ExtensionPackage> PackageExtensions(List<ExtensionManifest> packagesList)
+    {
+        return packagesList.GroupBy(p => new { p.Identifier, p.Version })
+        .Select(x =>
+            new ExtensionPackage(x.Key.Identifier, x.Key.Version,
+                x.Where(r => r.Identifier == x.Key.Identifier).ToList()
+            )).OrderByDescending(r => GetVersion(r.Version));
+    }
+
+
+
+    public async Task<IEnumerable<ExtensionPackage>> GetExtensionsAsync(bool prerelease = false)
     {
         var packagesList = await GetPreReleaseExtensionPackagesAsync(prerelease);
 

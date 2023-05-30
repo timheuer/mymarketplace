@@ -12,7 +12,7 @@
     public string? Version { get; set; }
 
     [CascadingParameter]
-    public IEnumerable<ExtensionPackage>? Packages { get; set; }    
+    public IEnumerable<ExtensionPackage>? Packages { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -20,7 +20,13 @@
     }
 
     private string ReadmeContent { get; set; } = string.Empty;
-    private List<string>? versions;
+    private List<string> versions = new();
+
+    private ExtensionManifest? SelectedExtensionVersion =>
+        Packages?.FirstOrDefault()?.MainExtension;
+
+    private List<ExtensionManifest?> ExtensionPackContents { get; set; } = new();
+    private string[] UnavailableExtensions { get; set; } = Array.Empty<string>();
 
     async Task LoadPackages()
     {
@@ -31,7 +37,7 @@
             Packages = allPackages.Where(x => x.Identifier == Identifier && x.Version == Version);
 
             http.BaseAddress = new Uri(Navigator.BaseUri);
-            ReadmeContent = await http.GetStringAsync(Packages.First().Extensions[0].ReadmePath);
+            ReadmeContent = await http.GetStringAsync(SelectedExtensionVersion!.ReadmePath);
         }
     }
 
@@ -43,8 +49,23 @@
             Navigator.NavigateTo($"/details/{Identifier}/{version}", true);
         }
     }
+
+    async Task OnTabChange(string key)
+    {
+        if (key != "extensionPack")
+            return;
+
+        //TODO: Avoid reloading the extension pack contents if already loaded
+
+        var extensionPackIds = SelectedExtensionVersion!.ExtensionPackIds;
+        var items = await Client.GetExtensionPackagesAsync(extensionPackIds);
+        UnavailableExtensions = extensionPackIds.Except(items.Select(x => x.Identifier)).ToArray();
+
+        ExtensionPackContents = items.Select(x => x.MainExtension).ToList();
+        string.Format("Extension pack contains {0} extensions", ExtensionPackContents.Count);
+    }
 }
-<PageTitle>My Marketplace - Package Detail</PageTitle>
+<PageTitle>@SelectedExtensionVersion.DisplayName - My Marketplace</PageTitle>
 
 <CascadingValue Value="@Packages">
     <PackageList />
@@ -57,9 +78,9 @@
             <ChildContent>@Version</ChildContent>
             <Overlay>
                 <Menu Selectable DefaultSelectedKeys="@(new[] {@Version})" OnMenuItemClicked="@((mi)=>VersionSelected(mi.Key))">
-                    @foreach (var version in versions)
+                     @foreach (var version in versions)
                     {
-                        <MenuItem Key="@version">@version</MenuItem>
+                            <MenuItem Key="@version">@version</MenuItem>
                     }
                 </Menu>
             </Overlay>
@@ -67,7 +88,48 @@
     </Space>
 
     <Divider />
-
-    <Readme ReadmeContent="@ReadmeContent" />
+    <Tabs OnChange="OnTabChange">
+        <TabPane Key="readme" Tab="Overview">
+            <Readme ReadmeContent="@ReadmeContent" />
+        </TabPane>
+        @if (SelectedExtensionVersion!.IsExtensionPack)
+        {
+                <TabPane Key="extensionPack" Tab='@string.Format("Extension Pack ({0})", SelectedExtensionVersion!.ExtensionPackIds.Length)'>
+                @if (@UnavailableExtensions.Length > 0)
+                {
+                    <Text>This pack contains the following extensions that are missing:</Text>
+                    <ul>
+                        @foreach (var id in UnavailableExtensions)
+                        {
+                            <li> <a href="https://marketplace.visualstudio.com/items?itemName=@id" target="_blank">@id</a></li>
+                        }
+                   </ul>
+                }
+                   <AntList DataSource="@ExtensionPackContents" TItem="ExtensionManifest">
+                        <ListItem>
+                            <ListItemMeta>
+                                <DescriptionTemplate>
+                                    @context.Description
+                                </DescriptionTemplate>
+                                <AvatarTemplate>
+                                    <Avatar Shape="@AvatarShape.Square" Size="32" Src="@context.PackageIconPath" />
+                                </AvatarTemplate>
+                                <TitleTemplate>
+                                    <Space Direction="DirectionVHType.Vertical">
+                                            <Space Align="center" Style="gap:8px">
+                                                <NavLink target="_top" href="@($"/details/{context.Identifier}/{context.Version}")">
+                                                    @context.DisplayName
+                                                </NavLink>
+                                                <Tag>@($"v{context.Version}")</Tag>
+                                            </Space>
+                                            <Text Type="@TextElementType.Secondary">@context.Identifier</Text>
+                                        </Space>
+                                    </TitleTemplate>
+                                </ListItemMeta>
+                            </ListItem>
+                        </AntList>
+                    </TabPane>
+        }
+    </Tabs>
 
 </CascadingValue>

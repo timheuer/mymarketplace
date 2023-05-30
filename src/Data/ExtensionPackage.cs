@@ -9,4 +9,6 @@
     public string Identifier { get; private set; }
     public string Version { get; private set; }
     public IList<ExtensionManifest> Extensions { get; private set; }
+
+    public ExtensionManifest? MainExtension => Extensions.FirstOrDefault();
 }
