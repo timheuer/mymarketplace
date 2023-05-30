@@ -20,8 +20,8 @@ public class ExtensionManifest
             return isPreRelease || (success && semVersion.IsPrerelease);
         }
     }
-    public bool IsExtensionPack => ExtensionPackContents is not null && ExtensionPackContents.Length > 0;
-    public string[] ExtensionPackContents
+    public bool IsExtensionPack => ExtensionPackIds is not null && ExtensionPackIds.Length > 0;
+    public string[] ExtensionPackIds
     {
         get
         {
