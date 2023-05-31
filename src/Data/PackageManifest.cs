@@ -26,18 +26,24 @@ public class ExtensionManifest
         get
         {
             string? value = Metadata?.Properties?.FirstOrDefault(p => p.Id == "Microsoft.VisualStudio.Code.ExtensionPack")?.Value;
-            if (string.IsNullOrWhiteSpace(value))
-                return Array.Empty<string>();
+            return value.GetSplitValues();
+        }
+    }
 
-            return value.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-
+    public bool HasDependencies => Dependencies is not null && Dependencies.Length > 0;
+    public string[] Dependencies
+    {
+        get
+        {
+            string? value = Metadata?.Properties?.FirstOrDefault(p => p.Id == "Microsoft.VisualStudio.Code.ExtensionDependencies")?.Value;
+            return value.GetSplitValues();
         }
     }
 
     public string Version => Metadata?.Identity?.Version ?? "0.0.0";
     public string Target => Metadata?.Identity?.TargetPlatform ?? "any";
     public string Location { get; set; } = string.Empty;
-    public string[]? Categories => Metadata?.CategoryString?.Split(',');
+    public string[]? Categories => Metadata?.CategoryString?.GetSplitValues();
     public string DisplayName => Metadata?.DisplayName ?? Identifier;
     public string? Description => Metadata?.Description ?? string.Empty;
     public string? RelativeIconPath => Assets?.FirstOrDefault(a => a.AssetType == "Microsoft.VisualStudio.Services.Icons.Default")?.Path;

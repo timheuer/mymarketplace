@@ -1,0 +1,47 @@
+@inject ExtensionClient Client
+@inject IHttpContextAccessor http
+@inject IMessageService _message
+@inject HttpClient _httpClient
+@inject NavigationManager Navigator
+
+@code{
+    [CascadingParameter(Name = "UnavailableExtensions")]
+    public string[]? UnavailableExtensions {get;set;}
+
+
+    [CascadingParameter(Name = "AvailableExtensions")]
+    public IEnumerable<ExtensionManifest>? AvailableExtensions {get;set;}
+}
+@if (@UnavailableExtensions.Length > 0)
+{
+    <Text>This pack contains the following extensions that are missing:</Text>
+    <ul>
+        @foreach (var id in UnavailableExtensions)
+        {
+            <li> <a href="https://marketplace.visualstudio.com/items?itemName=@id" target="_blank">@id</a></li>
+        }
+    </ul>
+}
+<AntList DataSource="@AvailableExtensions" TItem="ExtensionManifest">
+    <ListItem>
+        <ListItemMeta>
+            <DescriptionTemplate>
+                @context.Description
+            </DescriptionTemplate>
+            <AvatarTemplate>
+                <Avatar Shape="@AvatarShape.Square" Size="32" Src="@context.PackageIconPath" />
+            </AvatarTemplate>
+            <TitleTemplate>
+                <Space Direction="DirectionVHType.Vertical">
+                        <Space Align="center" Style="gap:8px">
+                            <NavLink target="_top" href="@($"/details/{context.Identifier}/{context.Version}")">
+                                @context.DisplayName
+                            </NavLink>
+                            <Tag>@($"v{context.Version}")</Tag>
+                        </Space>
+                        <Text Type="@TextElementType.Secondary">@context.Identifier</Text>
+                    </Space>
+                </TitleTemplate>
+        </ListItemMeta>
+    </ListItem>
+</AntList>
