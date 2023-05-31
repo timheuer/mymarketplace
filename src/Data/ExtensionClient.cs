@@ -35,12 +35,12 @@ public class ExtensionClient
 
     public async Task<IEnumerable<ExtensionPackage>> GetExtensionPackagesAsync(string[] identifiers)
     {
-        var packagesList = _databaseService.Find(p => identifiers.Contains(p.Identifier));
+        var packagesList = _databaseService.Find(p => identifiers.Contains(p.Identifier)).DistinctBy(p => p.Identifier);
         var extensionPackages = PackageExtensions(packagesList);
         return extensionPackages;
     }
 
-    IOrderedEnumerable<ExtensionPackage> PackageExtensions(List<ExtensionManifest> packagesList)
+    IOrderedEnumerable<ExtensionPackage> PackageExtensions(IEnumerable<ExtensionManifest> packagesList)
     {
         return packagesList.GroupBy(p => new { p.Identifier, p.Version })
         .Select(x =>

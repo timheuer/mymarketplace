@@ -1,4 +1,4 @@
-﻿public class Utilities
+﻿public static class Utilities
 {
     public static string UploadDirectory(IWebHostEnvironment environment)
     {
@@ -32,5 +32,13 @@
         }
 
         return outputDirectory;
+    }
+
+    public static string[] GetSplitValues(this string? value, char separator = ',')
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return Array.Empty<string>();
+
+        return value.Split(separator, StringSplitOptions.RemoveEmptyEntries);
     }
 }
