@@ -69,67 +69,36 @@
 
 <CascadingValue Value="@Packages">
     <PackageList />
-
-    <Divider />
-
-    <Space Direction="DirectionVHType.Horizontal" Style="gap:8px">
-        <Text>Version(s):</Text>
-        <DropdownButton>
-            <ChildContent>@Version</ChildContent>
-            <Overlay>
-                <Menu Selectable DefaultSelectedKeys="@(new[] {@Version})" OnMenuItemClicked="@((mi)=>VersionSelected(mi.Key))">
-                     @foreach (var version in versions)
-                    {
-                            <MenuItem Key="@version">@version</MenuItem>
-                    }
-                </Menu>
-            </Overlay>
-        </DropdownButton>
-    </Space>
-
-    <Divider />
-    <Tabs OnChange="OnTabChange">
-        <TabPane Key="readme" Tab="Overview">
-            <Readme ReadmeContent="@ReadmeContent" />
-        </TabPane>
-        @if (SelectedExtensionVersion!.IsExtensionPack)
-        {
-                <TabPane Key="extensionPack" Tab='@string.Format("Extension Pack ({0})", SelectedExtensionVersion!.ExtensionPackIds.Length)'>
-                @if (@UnavailableExtensions.Length > 0)
-                {
-                    <Text>This pack contains the following extensions that are missing:</Text>
-                    <ul>
-                        @foreach (var id in UnavailableExtensions)
-                        {
-                            <li> <a href="https://marketplace.visualstudio.com/items?itemName=@id" target="_blank">@id</a></li>
-                        }
-                   </ul>
-                }
-                   <AntList DataSource="@ExtensionPackContents" TItem="ExtensionManifest">
-                        <ListItem>
-                            <ListItemMeta>
-                                <DescriptionTemplate>
-                                    @context.Description
-                                </DescriptionTemplate>
-                                <AvatarTemplate>
-                                    <Avatar Shape="@AvatarShape.Square" Size="32" Src="@context.PackageIconPath" />
-                                </AvatarTemplate>
-                                <TitleTemplate>
-                                    <Space Direction="DirectionVHType.Vertical">
-                                            <Space Align="center" Style="gap:8px">
-                                                <NavLink target="_top" href="@($"/details/{context.Identifier}/{context.Version}")">
-                                                    @context.DisplayName
-                                                </NavLink>
-                                                <Tag>@($"v{context.Version}")</Tag>
-                                            </Space>
-                                            <Text Type="@TextElementType.Secondary">@context.Identifier</Text>
-                                        </Space>
-                                    </TitleTemplate>
-                                </ListItemMeta>
-                            </ListItem>
-                        </AntList>
-                    </TabPane>
-        }
-    </Tabs>
-
 </CascadingValue>
+<Divider />
+
+<Space Direction="DirectionVHType.Horizontal" Style="gap:8px">
+    <Text>Version(s):</Text>
+    <DropdownButton>
+        <ChildContent>@Version</ChildContent>
+        <Overlay>
+            <Menu Selectable DefaultSelectedKeys="@(new[] {@Version})" OnMenuItemClicked="@((mi)=>VersionSelected(mi.Key))">
+                 @foreach (var version in versions)
+                {
+                            <MenuItem Key="@version">@version</MenuItem>
+                }
+            </Menu>
+        </Overlay>
+    </DropdownButton>
+</Space>
+<Divider />
+<Tabs OnChange="OnTabChange">
+    <TabPane Key="readme" Tab="Overview">
+        <Readme ReadmeContent="@ReadmeContent" />
+    </TabPane>
+    @if (SelectedExtensionVersion!.IsExtensionPack)
+    {
+        <TabPane Key="extensionPack" Tab='@string.Format("Extension Pack ({0})", SelectedExtensionVersion!.ExtensionPackIds.Length)'>
+            <CascadingValue Value="@UnavailableExtensions" Name="UnavailableExtensions">
+                <CascadingValue Value="@ExtensionPackContents" Name="AvailableExtensions">
+                    <SimplePackageList />
+                </CascadingValue>
+            </CascadingValue>
+        </TabPane>
+    }
+    </Tabs>
